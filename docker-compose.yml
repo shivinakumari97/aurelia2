@@ -1,0 +1,24 @@
+# Local PostgreSQL for development.
+#   docker compose up -d db
+#   npm run db:push && npm run db:seed && npm run dev
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: aurelia-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: aurelia
+      POSTGRES_PASSWORD: aurelia
+      POSTGRES_DB: aurelia
+    ports:
+      - "5432:5432"
+    volumes:
+      - aurelia_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aurelia"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  aurelia_pgdata:
