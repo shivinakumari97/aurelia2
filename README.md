@@ -52,7 +52,7 @@ cp .env.example .env
 #   In development these fall back to insecure dev defaults automatically.
 
 # 4. Create schema + seed demo data
-npm run db:push
+npm run db:push       # quick dev sync (or: npm run db:migrate:deploy)
 npm run db:seed
 
 # 5. Run
@@ -76,9 +76,37 @@ key to enable LLM-refined reasoning summaries and classification.
 | `npm run build`    | `prisma generate` + production build |
 | `npm run test`     | Vitest unit tests                    |
 | `npm run typecheck`| `tsc --noEmit`                       |
-| `npm run db:push`  | Sync schema to the database          |
+| `npm run db:push`  | Sync schema to the database (quick dev) |
+| `npm run db:migrate:deploy` | Apply committed migrations (production) |
 | `npm run db:seed`  | Seed demo organization + data        |
 | `npm run db:studio`| Prisma Studio                        |
+
+---
+
+## Deployment (Vercel + managed Postgres)
+
+The app deploys as a standard Next.js project. A committed Prisma migration
+(`prisma/migrations/`) applies the schema automatically on deploy via the
+`vercel-build` script (`prisma generate && prisma migrate deploy && next build`),
+configured in `vercel.json`.
+
+1. **Database** — create a Postgres instance (Neon is simplest with Prisma;
+   Supabase / Vercel Postgres also work). Copy its connection string.
+2. **Secrets** — generate:
+   ```bash
+   openssl rand -base64 48   # JWT_ACCESS_SECRET
+   openssl rand -base64 32   # FIELD_ENCRYPTION_KEY (must decode to 32 bytes)
+   ```
+3. **Import the repo on Vercel** (auto-detects Next.js) and set env vars:
+   `DATABASE_URL`, `JWT_ACCESS_SECRET`, `FIELD_ENCRYPTION_KEY`, `NODE_ENV=production`,
+   optionally `ANTHROPIC_API_KEY` and `APP_URL`.
+4. **Deploy.** Migrations run during the build; no manual schema step needed.
+   Run `npm run db:seed` against the cloud DB once if you want demo data.
+
+> **Migrations need a direct connection.** If your provider uses connection
+> pooling (Supabase pgBouncer on `6543`, Neon `-pooler`), point `DATABASE_URL`
+> at the **direct** endpoint, or migrations during build may fail. Never change
+> `FIELD_ENCRYPTION_KEY` after data exists — encrypted fields become unreadable.
 
 ---
 
