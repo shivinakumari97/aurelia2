@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-parchment text-ink-800 font-sans;
+  }
+  h1, h2, h3, h4 {
+    @apply font-serif text-ink-900;
+  }
+  ::selection {
+    @apply bg-gold-200 text-ink-900;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+  .card {
+    @apply rounded-2xl border border-ink-100 bg-white shadow-soft;
+  }
+  .label {
+    @apply block text-sm font-medium text-ink-700 mb-1.5;
+  }
+  .input {
+    @apply w-full rounded-xl border border-ink-200 bg-white px-3.5 py-2.5 text-ink-900
+      placeholder:text-ink-300 outline-none transition
+      focus:border-gold-400 focus:ring-2 focus:ring-gold-200;
+  }
+  .hairline {
+    @apply border-ink-100;
+  }
+}
+
+/* Thin, refined scrollbars to match the editorial aesthetic. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: theme("colors.ink.200") transparent;
+}
